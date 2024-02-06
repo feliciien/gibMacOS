@@ -1,4 +1,6 @@
 import sys, subprocess, time, threading, shlex
+from security import safe_command
+
 try:
     from Queue import Queue, Empty
 except:
@@ -34,7 +36,7 @@ class Run:
                 comm = " ".join(shlex.quote(x) for x in comm)
             if not shell and type(comm) is str:
                 comm = shlex.split(comm)
-            p = subprocess.Popen(comm, shell=shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0, universal_newlines=True, close_fds=ON_POSIX)
+            p = safe_command.run(subprocess.Popen, comm, shell=shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0, universal_newlines=True, close_fds=ON_POSIX)
             # Setup the stdout thread/queue
             q,t   = self._create_thread(p.stdout)
             qe,te = self._create_thread(p.stderr)
@@ -87,7 +89,7 @@ class Run:
                 comm = " ".join(shlex.quote(x) for x in comm)
             if not shell and type(comm) is str:
                 comm = shlex.split(comm)
-            p = subprocess.Popen(comm, shell=shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p = safe_command.run(subprocess.Popen, comm, shell=shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             c = p.communicate()
         except:
             if c == None:

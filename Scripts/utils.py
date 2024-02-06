@@ -1,4 +1,5 @@
 import sys, os, time, re, json, datetime, ctypes, subprocess
+from security import safe_command
 
 if os.name == "nt":
     # Windows
@@ -36,7 +37,7 @@ class Utils:
             ctypes.windll.shell32.ShellExecuteW(None, "runas", '"{}"'.format(sys.executable), '"{}"'.format(file), None, 1)
         else:
             try:
-                p = subprocess.Popen(["which", "sudo"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                p = safe_command.run(subprocess.Popen, ["which", "sudo"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 c = p.communicate()[0].decode("utf-8", "ignore").replace("\n", "")
                 os.execv(c, [ sys.executable, 'python'] + sys.argv)
             except:
